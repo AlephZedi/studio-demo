@@ -1,0 +1,70 @@
+swagger: '2.0'
+
+paths:
+  /{version}/commerce/inventory:
+    get:
+      tags:
+        - Inventory
+      operationId: getInventoryItems
+      summary: Get information on the inventory stock levels for all variants, paginated
+      description: "Get information on the inventory stock levels for all variants, paginated"
+      x-event-name: InventoryApi_GetInventoryItems
+      parameters:
+        - name: version
+          in: path
+          type: string
+          required: true
+        - name: "cursor"
+          in: query
+          type: string
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: "#/definitions/PaginatedInventoryItemListResponse"
+
+  /{version}/commerce/inventory/{variantIdCsvs}:
+    get:
+      tags:
+        - Inventory
+      operationId: getSpecificInventoryItems
+      summary: Get information on the inventory stock levels for one or more variants.
+      description: "Get information on the inventory stock levels for one or more variants."
+      x-event-name: InventoryApi_GetSpecificInventoryItems
+      parameters:
+        - name: version
+          in: path
+          type: string
+          required: true
+        - name: variantIdCsvs
+          in: path
+          type: string # Ideally, this should be an array w/ collectionFormat: csv, but codegen doesn't support this.
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: "#/definitions/InventoryItemListResponse"
+
+  /{version}/commerce/inventory/adjustments:
+    post:
+      tags:
+        - Inventory
+      operationId: adjustInventoryStockLevels
+      summary: Adjust stock levels on inventory items using relative operations (e.g. increments) or absolute operations (set to this level, set as unlimited).
+      description: "Adjust stock levels on inventory items using relative operations (e.g. increments) or absolute operations (set to this level, set as unlimited)."
+      x-event-name: InventoryApi_AdjustInventoryStockLevels
+      parameters:
+        - name: version
+          in: path
+          type: string
+          required: true
+        - name: "Idempotency-Key"
+          in: header
+          type: string
+        - name: adjustmentRequest
+          in: body
+          schema:
+            $ref: '#/definitions/CreateInventoryAdjustmentRequest'
+      responses:
+        204:
+          description: The request was successfully processed.
